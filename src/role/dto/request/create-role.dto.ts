@@ -13,7 +13,7 @@ import { PermissionAction } from 'src/permission/enum/permission.enum';
 export class CreateRoleDto {
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.values(UserRole), { each: true })
+  @IsIn(Object.values(UserRole), { each: true, message: 'Invalid role' })
   name: string;
 
   @IsString()
@@ -23,6 +23,6 @@ export class CreateRoleDto {
   @IsNotEmpty()
   @IsArray()
   @ArrayUnique()
-  @IsEnum(PermissionAction, { each: true })
+  @IsEnum(PermissionAction, { each: true, message: 'Invalid permission' })
   permissions: string[];
 }

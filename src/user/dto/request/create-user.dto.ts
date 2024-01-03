@@ -16,6 +16,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.values(UserStatus))
+  @IsIn(Object.values(UserStatus), { message: 'Invalid status' })
   status: string;
 }

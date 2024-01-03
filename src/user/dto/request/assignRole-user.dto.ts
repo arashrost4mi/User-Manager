@@ -5,6 +5,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsArray()
   @ArrayUnique()
-  @IsEnum(UserRole, { each: true })
+  @IsEnum(UserRole, { each: true, message: 'Invalid role' })
   roles: string[];
 }

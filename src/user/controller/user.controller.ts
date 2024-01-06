@@ -13,6 +13,8 @@ import {
   PermissionGuard,
   RequirePermissions,
 } from 'src/auth/guard/permission.guard';
+import { AssignRoleUserDto } from '../dto/request/assignRole-user.dto';
+import { AssignStatusUserDto } from '../dto/request/assignStatus-user.dto';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -53,10 +55,23 @@ export class UserController {
   @RequirePermissions('update-user')
   async assignRole(
     @Param('username') username: string,
-    @Body('roles') roles: string[],
+    @Body() roles: AssignRoleUserDto,
   ) {
     try {
       return await this.userService.assignRole(username, roles);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  @Put('assign-status/:username')
+  @RequirePermissions('update-user')
+  async assignStatus(
+    @Param('username') username: string,
+    @Body('status') status: AssignStatusUserDto,
+  ) {
+    try {
+      return await this.userService.assignStatus(username, status);
     } catch (error) {
       throw new Error(error);
     }

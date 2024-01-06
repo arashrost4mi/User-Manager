@@ -12,6 +12,7 @@ import { RoleService } from 'src/role/service/role.service';
 import { CreateRoleDto } from 'src/role/dto/request/create-role.dto';
 import { PermissionService } from 'src/permission/service/permission.service';
 import { CreatePermissionDto } from 'src/permission/dto/request/create-permission.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
   async validateUser(username: string, password: string) {
     const user = await this.userService.findUserForLogin(username);
     try {
-      if (user && password === user.password) {
+      if (user && (await bcrypt.compare(password, user.password))) {
         const result = {
           name: user.name,
           username: user.username,
@@ -33,6 +34,8 @@ export class AuthService {
           roles: user.roles,
         };
         return result;
+      } else {
+        throw new UnauthorizedException('Invalid username or password');
       }
     } catch (error) {
       throw new InternalServerErrorException(

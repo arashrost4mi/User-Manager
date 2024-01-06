@@ -4,7 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/request/create-user.dto';
+import { AssignStatusUserDto } from '../dto/request/assignStatus-user.dto';
+import { AssignRoleUserDto } from '../dto/request/assignRole-user.dto';
 import { PrismaClient, User } from '@prisma/client';
+import { UserStatus } from '../enum/status-user.enum';
 
 @Injectable()
 export class UserRepository {
@@ -12,7 +15,13 @@ export class UserRepository {
 
   async createUser(data: CreateUserDto): Promise<User> {
     return await this.prisma.user.create({
-      data: data,
+      data: {
+        name: data.name,
+        username: data.username,
+        password: data.password,
+        status: UserStatus.ACTIVE,
+        roles: [],
+      },
     });
   }
 
@@ -36,17 +45,27 @@ export class UserRepository {
     });
   }
 
-  async assignRole(username: string, roleName: string) {
+  async assignRole(username: string, roleName: AssignRoleUserDto) {
     try {
       const user = await this.findByUsername(username);
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      if (user.roles.includes(roleName)) {
-        throw new ConflictException('User already has this role');
+
+      if (!Array.isArray(roleName.roles)) {
+        throw new NotFoundException('Role not found');
       }
 
-      user.roles.push(roleName);
+      for (const role of roleName.roles) {
+        if (user.roles.includes(role)) {
+          throw new ConflictException('User already has this role');
+        }
+        console.log(role);
+        user.roles.push(role);
+        console.log(user.roles);
+      }
+
+      console.log(user.roles);
       await this.prisma.user.update({
         where: {
           username: user.username,
@@ -57,6 +76,30 @@ export class UserRepository {
       });
 
       return { success: true, message: 'Role assigned successfully' };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async assignStatus(username: string, status: AssignStatusUserDto) {
+    try {
+      const user = await this.findByUsername(username);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (user.status === status.status) {
+        throw new ConflictException('User already has this status');
+      }
+      user.status = status.status;
+      await this.prisma.user.update({
+        where: {
+          username: user.username,
+        },
+        data: {
+          status: user.status,
+        },
+      });
+      return { success: true, message: 'Status assigned successfully' };
     } catch (error) {
       throw new Error(error);
     }

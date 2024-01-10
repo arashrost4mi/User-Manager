@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  Matches,
+  IsEmail,
+  IsPhoneNumber,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -17,4 +24,14 @@ export class CreateUserDto {
       'Password is not strong enough. It must contain at least one lowercase letter, one uppercase letter, one digit, and be at least 8 characters long.',
   })
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail({ require_tld: true }, { message: 'Email is not valid' })
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsPhoneNumber('IR', { message: 'Phone number is not valid' })
+  phone: string;
 }

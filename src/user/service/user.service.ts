@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../repository/user.repository';
 import { CreateUserDto } from '../dto/request/create-user.dto';
@@ -48,7 +48,16 @@ export class UserService implements UserServiceInterface {
   }
 
   async findUserForLogin(username: string) {
-    return await this.userRepository.findByUsername(username);
+    try {
+      const user = await this.userRepository.findByUsername(username);
+      if (user) {
+        return user;
+      } else {
+        throw new NotFoundException('User not found');
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async assignRole(username: string, roleName: AssignRoleUserDto) {

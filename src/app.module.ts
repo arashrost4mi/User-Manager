@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
+import { RedisModule } from './redis/redis.module';
 import { PrismaClient } from '@prisma/client';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -8,7 +9,14 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 
 @Module({
-  imports: [UserModule, AuthModule, JwtModule, RoleModule, PermissionModule],
+  imports: [
+    UserModule,
+    AuthModule,
+    JwtModule,
+    RoleModule,
+    PermissionModule,
+    RedisModule,
+  ],
   controllers: [RoleController],
   providers: [
     {

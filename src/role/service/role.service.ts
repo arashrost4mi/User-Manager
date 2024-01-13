@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleServiceInterface } from '../interface/role-service.interface';
 import { RoleRepository } from '../repository/role.repository';
-import { Serialize } from 'src/user/serializer/user.serializer';
+import { Serialize } from 'src/serializer/user.serializer';
 import { CreateRoleDto } from '../dto/request/create-role.dto';
 import { GetRoleDto } from '../dto/response/get-role.dto';
 

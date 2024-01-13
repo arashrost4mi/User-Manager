@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePermissionDto } from '../dto/request/create-permission.dto';
 import { GetPermissionDto } from '../dto/response/get-permission.dto';
 import { PermissionServiceInterface } from '../interface/permission-service.interface';
-import { Serialize } from 'src/user/serializer/user.serializer';
+import { Serialize } from 'src/serializer/user.serializer';
 import { PermissionRepository } from '../repository/permission.repository';
 
 @Injectable()

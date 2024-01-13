@@ -67,7 +67,7 @@ export class UserService implements UserServiceInterface {
           await this.userRepository.assignRole(username, role);
         }
       } else {
-        await this.userRepository.assignRole(username, roleName);
+        return await this.userRepository.assignRole(username, roleName);
       }
     } catch (error) {
       throw new Error(error);

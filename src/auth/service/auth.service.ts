@@ -14,13 +14,14 @@ import { CreateRoleDto } from 'src/role/dto/request/create-role.dto';
 import { PermissionService } from 'src/permission/service/permission.service';
 import { CreatePermissionDto } from 'src/permission/dto/request/create-permission.dto';
 import { OtpService } from './otp.service';
-import { Redis } from 'ioredis';
+import { AuthRepository } from '../repository/auth.repository';
 import axios from 'axios';
 import * as bcrypt from 'bcrypt';
 import { SendOtpDto } from 'src/user/dto/request/send-otp.dto';
+import { authServiceInerface } from '../interface/auth-service.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements authServiceInerface {
   private apiUrl = 'http://localhost:8000';
   private smsEndpoint = 'sms/send/otp';
   private emailEndpoint = 'email/send/otp';
@@ -31,7 +32,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private otpService: OtpService,
-    private redisClient: Redis,
+    private authRepository: AuthRepository,
   ) {}
 
   async loginWithPassword(data: LoginUserDto) {
@@ -60,16 +61,16 @@ export class AuthService {
         throw new UnauthorizedException('User is not active');
       }
 
-      const otp = await this.redisClient.get(`login-${data.username}`);
+      const otp = await this.authRepository.getOtp(`login-${data.username}`);
 
       if (!otp) {
         throw new NotFoundException('OTP not found');
       }
 
-      const otpRemainingTime = await this.redisClient.ttl(
+      const otpRemainingTime = await this.authRepository.remainingTimeOtp(
         `login-${data.username}`,
       );
-      console.log(otpRemainingTime);
+
       if (otpRemainingTime < 0) {
         throw new NotFoundException('OTP expired');
       }
@@ -123,12 +124,7 @@ export class AuthService {
 
       const otp = await this.otpService.generateOtp(username.username);
 
-      await this.redisClient.set(
-        `login-${username.username}`,
-        otp,
-        'EX',
-        60 * 5,
-      );
+      await this.authRepository.setOtp(`login-${username.username}`, otp);
 
       const url = `${this.apiUrl}/${this.smsEndpoint}`;
       const response = await axios.post(url, {
@@ -149,15 +145,12 @@ export class AuthService {
   async sendEmailWithOtp(username: SendOtpDto) {
     try {
       const user = await this.userService.findUserForLogin(username.username);
+      console.log(user.email);
+      console.log(user);
 
-      const otp = await this.otpService.generateOtp(username.username);
+      const otp = await this.otpService.generateOtp(user.username);
 
-      await this.redisClient.set(
-        `login-${username.username}`,
-        otp,
-        'EX',
-        60 * 5,
-      );
+      await this.authRepository.setOtp(`login-${user.username}`, otp);
 
       const url = `${this.apiUrl}/${this.emailEndpoint}`;
       const response = await axios.post(url, {

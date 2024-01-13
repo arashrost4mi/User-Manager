@@ -4,19 +4,16 @@ import { AuthController } from './controller/auth.controller';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
-// import { LocalStrategy } from './strategy/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { RoleModule } from 'src/role/role.module';
 import { PermissionModule } from 'src/permission/permission.module';
 import { env } from 'process';
 import { OtpService } from './service/otp.service';
-import { RedisModule } from 'src/redis/redis.module';
 import { Redis } from 'ioredis';
 
 @Module({
   imports: [
     UserModule,
-    RedisModule,
     PassportModule,
     RoleModule,
     PermissionModule,
@@ -27,7 +24,7 @@ import { Redis } from 'ioredis';
       },
     }),
   ],
-  providers: [AuthService, /* LocalStrategy, */ JwtStrategy, OtpService, Redis],
+  providers: [AuthService, JwtStrategy, OtpService, Redis],
   exports: [AuthService],
   controllers: [AuthController],
 })

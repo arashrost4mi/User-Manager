@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { RoleServiceInterface } from '../interface/role-service.interface';
 import { RoleRepository } from '../repository/role.repository';
-import { Serialize } from 'src/serializer/user.serializer';
+import { Serialize } from 'src/common/serializer/user.serializer';
 import { CreateRoleDto } from '../dto/request/create-role.dto';
 import { GetRoleDto } from '../dto/response/get-role.dto';
+import { UpdateRoleDto } from '../dto/request/update-role.dto';
 
 @Injectable()
 export class RoleService implements RoleServiceInterface {
@@ -46,6 +47,14 @@ export class RoleService implements RoleServiceInterface {
     }
   }
 
+  async updateRole(name: string, data: UpdateRoleDto) {
+    try {
+      return await this.roleRepository.updateRole(name, data);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async findAllPermissions(roleName: string | string[]) {
     try {
       const userPermissions: string[] = [];
@@ -64,6 +73,25 @@ export class RoleService implements RoleServiceInterface {
         userPermissions.push(...permissions);
       }
       return userPermissions;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async updateRolePermissions(roleName: string, permissions: string[]) {
+    try {
+      return await this.roleRepository.updateRolePermissions(
+        roleName,
+        permissions,
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async removeRole(roleName: string) {
+    try {
+      return await this.roleRepository.removeRole(roleName);
     } catch (error) {
       throw new Error(error);
     }

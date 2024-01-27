@@ -12,7 +12,9 @@ import {
   PermissionGuard,
   RequirePermissions,
 } from 'src/auth/guard/permission.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Role')
 @Controller('role')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class RoleController {

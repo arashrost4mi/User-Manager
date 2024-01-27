@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../repository/user.repository';
 import { CreateUserDto } from '../dto/request/create-user.dto';
 import { AssignStatusUserDto } from '../dto/request/assignStatus-user.dto';
-import { Serialize } from '../../serializer/user.serializer';
+import { Serialize } from '../../common/serializer/user.serializer';
 import { GetUserDto } from '../dto/response/get-user.dto';
 import { UserServiceInterface } from '../interface/user-service.interface';
 import { AssignRoleUserDto } from '../dto/request/assignRole-user.dto';
@@ -74,9 +74,47 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async removeRole(username: string, roleName: AssignRoleUserDto) {
+    try {
+      if (Array.isArray(roleName)) {
+        for (const role of roleName) {
+          await this.userRepository.removeRole(username, role);
+        }
+      } else {
+        return await this.userRepository.removeRole(username, roleName);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async assignStatus(username: string, status: AssignStatusUserDto) {
     try {
       return await this.userRepository.assignStatus(username, status);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async changeStatus(username: string, status: AssignStatusUserDto) {
+    try {
+      return await this.userRepository.changeStatus(username, status);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async updateUser(username: string, data: CreateUserDto) {
+    try {
+      return await this.userRepository.updateUser(username, data);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async removeUser(username: string) {
+    try {
+      return await this.userRepository.removeUser(username);
     } catch (error) {
       throw new Error(error);
     }

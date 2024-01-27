@@ -12,7 +12,9 @@ import {
   PermissionGuard,
   RequirePermissions,
 } from '../../auth/guard/permission.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Permission')
 @Controller('permission')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class PermissionController {

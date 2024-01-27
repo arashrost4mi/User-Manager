@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './service/auth.service';
 import { AuthController } from './controller/auth.controller';
+import { AuthRepository } from './repository/auth.repository';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
@@ -24,7 +25,7 @@ import { Redis } from 'ioredis';
       },
     }),
   ],
-  providers: [AuthService, JwtStrategy, OtpService, Redis],
+  providers: [AuthRepository, AuthService, JwtStrategy, OtpService, Redis],
   exports: [AuthService],
   controllers: [AuthController],
 })

@@ -15,7 +15,9 @@ import {
 } from 'src/auth/guard/permission.guard';
 import { AssignRoleUserDto } from '../dto/request/assignRole-user.dto';
 import { AssignStatusUserDto } from '../dto/request/assignStatus-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class UserController {

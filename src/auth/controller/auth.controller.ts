@@ -3,27 +3,27 @@ import {
   Post,
   Body,
   UseGuards,
-  // UnauthorizedException,
-  // InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
-// import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../service/auth.service';
-import { PermissionGuard } from '../guard/permission.guard';
+import { PermissionGuard, RequirePermissions } from '../guard/permission.guard';
 import { CreateUserDto } from 'src/user/dto/request/create-user.dto';
 import { LoginUserDto } from 'src/user/dto/request/login-user.dto';
 import { LoginOtpDto } from 'src/user/dto/request/login-otp.dto';
 import { CreateRoleDto } from 'src/role/dto/request/create-role.dto';
 import { CreatePermissionDto } from 'src/permission/dto/request/create-permission.dto';
 import { SendOtpDto } from 'src/user/dto/request/send-otp.dto';
-// import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
-@UseGuards(/* JwtAuthGuard, */ PermissionGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthGuard('local'))
   @Post('login/password')
   async loginWithPassword(@Body() data: LoginUserDto) {
     try {
@@ -34,7 +34,7 @@ export class AuthController {
     }
   }
 
-  // @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthGuard('local'))
   @Post('login/otp')
   async loginWithOtp(@Body() data: LoginOtpDto) {
     try {
@@ -75,7 +75,7 @@ export class AuthController {
   }
 
   @Post('create/user')
-  // @RequirePermissions('create-user')
+  @RequirePermissions('create-user')
   async createUser(@Body() data: CreateUserDto) {
     try {
       return await this.authService.createUser(data);
@@ -86,7 +86,7 @@ export class AuthController {
   }
 
   @Post('create/role')
-  // @RequirePermissions('create-role')
+  @RequirePermissions('create-role')
   async createRole(@Body() data: CreateRoleDto) {
     try {
       return await this.authService.createRole(data);
@@ -97,7 +97,7 @@ export class AuthController {
   }
 
   @Post('create/permission')
-  // @RequirePermissions('create-permission')
+  @RequirePermissions('create-permission')
   async createPermission(@Body() data: CreatePermissionDto) {
     try {
       return await this.authService.createPermission(data);
